@@ -4,7 +4,15 @@ import json
 
 pyautogui.useImageNotFoundException(False)
 
-from core.state import check_support_card, check_failure, check_turn, check_mood, check_current_year, check_criteria
+from core.state import (
+  check_support_card,
+  check_failure,
+  check_turn,
+  check_mood,
+  check_current_year,
+  check_criteria,
+  check_hint,
+)
 from core.logic import do_something
 from utils.constants import MOOD_LIST
 from core.recognizer import is_infirmary_active, match_template
@@ -48,12 +56,14 @@ def check_training():
       support_counts = check_support_card()
       total_support = sum(support_counts.values())
       failure_chance = check_failure()
+      hint_count = check_hint()
       results[key] = {
         "support": support_counts,
         "total_support": total_support,
-        "failure": failure_chance
+        "failure": failure_chance,
+        "hint": hint_count,
       }
-      print(f"[{key.upper()}] → {support_counts}, Fail: {failure_chance}%")
+      print(f"[{key.upper()}] → {support_counts}, Hint: {hint_count}, Fail: {failure_chance}%")
       time.sleep(0.1)
   
   pyautogui.mouseUp()
