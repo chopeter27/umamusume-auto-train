@@ -23,9 +23,22 @@ with open("config.json", "r", encoding="utf-8") as file:
 
 MINIMUM_MOOD = config["minimum_mood"]
 PRIORITIZE_G1_RACE = config["prioritize_g1_race"]
+GAME_REGION = tuple(config.get("screen_region", [0, 0, 1920, 1080]))
+OFFSET_X, OFFSET_Y = GAME_REGION[0], GAME_REGION[1]
+
+
+def in_lobby_screen():
+  return (
+    pyautogui.locateCenterOnScreen(
+      "assets/ui/tazuna_hint.png", confidence=0.8, minSearchTime=0.2, region=GAME_REGION
+    )
+    is not None
+  )
 
 def click(img, confidence = 0.8, minSearch = 2, click = 1, text = ""):
-  btn = pyautogui.locateCenterOnScreen(img, confidence=confidence, minSearchTime=minSearch)
+  btn = pyautogui.locateCenterOnScreen(
+    img, confidence=confidence, minSearchTime=minSearch, region=GAME_REGION
+  )
   if btn:
     if text:
       print(text)
@@ -49,7 +62,7 @@ def check_training():
   results = {}
 
   for key, icon_path in training_types.items():
-    pos = pyautogui.locateCenterOnScreen(icon_path, confidence=0.8)
+    pos = pyautogui.locateCenterOnScreen(icon_path, confidence=0.8, region=GAME_REGION)
     if pos:
       pyautogui.moveTo(pos, duration=0.1)
       pyautogui.mouseDown()
@@ -71,13 +84,19 @@ def check_training():
   return results
 
 def do_train(train):
-  train_btn = pyautogui.locateCenterOnScreen(f"assets/icons/train_{train}.png", confidence=0.8)
+  train_btn = pyautogui.locateCenterOnScreen(
+    f"assets/icons/train_{train}.png", confidence=0.8, region=GAME_REGION
+  )
   if train_btn:
     pyautogui.tripleClick(train_btn, interval=0.1, duration=0.2)
 
 def do_rest():
-  rest_btn = pyautogui.locateCenterOnScreen("assets/buttons/rest_btn.png", confidence=0.8)
-  rest_summber_btn = pyautogui.locateCenterOnScreen("assets/buttons/rest_summer_btn.png", confidence=0.8)
+  rest_btn = pyautogui.locateCenterOnScreen(
+    "assets/buttons/rest_btn.png", confidence=0.8, region=GAME_REGION
+  )
+  rest_summber_btn = pyautogui.locateCenterOnScreen(
+    "assets/buttons/rest_summer_btn.png", confidence=0.8, region=GAME_REGION
+  )
 
   if rest_btn:
     pyautogui.moveTo(rest_btn, duration=0.15)
@@ -87,8 +106,12 @@ def do_rest():
     pyautogui.click(rest_summber_btn)
 
 def do_recreation():
-  recreation_btn = pyautogui.locateCenterOnScreen("assets/buttons/recreation_btn.png", confidence=0.8)
-  recreation_summer_btn = pyautogui.locateCenterOnScreen("assets/buttons/rest_summer_btn.png", confidence=0.8)
+  recreation_btn = pyautogui.locateCenterOnScreen(
+    "assets/buttons/recreation_btn.png", confidence=0.8, region=GAME_REGION
+  )
+  recreation_summer_btn = pyautogui.locateCenterOnScreen(
+    "assets/buttons/rest_summer_btn.png", confidence=0.8, region=GAME_REGION
+  )
 
   if recreation_btn:
     pyautogui.moveTo(recreation_btn, duration=0.15)
@@ -126,7 +149,7 @@ def race_day():
   after_race()
 
 def race_select(prioritize_g1 = False):
-  pyautogui.moveTo(x=560, y=680)
+  pyautogui.moveTo(x=OFFSET_X + 560, y=OFFSET_Y + 680)
 
   time.sleep(0.2)
 
@@ -138,13 +161,17 @@ def race_select(prioritize_g1 = False):
       if race_card:
         for x, y, w, h in race_card:
           region = (x, y, 310, 90)
-          match_aptitude = pyautogui.locateCenterOnScreen("assets/ui/match_track.png", confidence=0.8, minSearchTime=0.7, region=region)
+          match_aptitude = pyautogui.locateCenterOnScreen(
+            "assets/ui/match_track.png", confidence=0.8, minSearchTime=0.7, region=region
+          )
           if match_aptitude:
             print("[INFO] G1 race found.")
             pyautogui.moveTo(match_aptitude, duration=0.2)
             pyautogui.click()
             for i in range(2):
-              race_btn = pyautogui.locateCenterOnScreen("assets/buttons/race_btn.png", confidence=0.8, minSearchTime=2)
+              race_btn = pyautogui.locateCenterOnScreen(
+                "assets/buttons/race_btn.png", confidence=0.8, minSearchTime=2, region=GAME_REGION
+              )
               if race_btn:
                 pyautogui.moveTo(race_btn, duration=0.2)
                 pyautogui.click(race_btn)
@@ -158,14 +185,18 @@ def race_select(prioritize_g1 = False):
   else:
     print("[INFO] Looking for race.")
     for i in range(4):
-      match_aptitude = pyautogui.locateCenterOnScreen("assets/ui/match_track.png", confidence=0.8, minSearchTime=0.7)
+      match_aptitude = pyautogui.locateCenterOnScreen(
+        "assets/ui/match_track.png", confidence=0.8, minSearchTime=0.7, region=GAME_REGION
+      )
       if match_aptitude:
         print("[INFO] Race found.")
         pyautogui.moveTo(match_aptitude, duration=0.2)
         pyautogui.click(match_aptitude)
 
         for i in range(2):
-          race_btn = pyautogui.locateCenterOnScreen("assets/buttons/race_btn.png", confidence=0.8, minSearchTime=2)
+          race_btn = pyautogui.locateCenterOnScreen(
+            "assets/buttons/race_btn.png", confidence=0.8, minSearchTime=2, region=GAME_REGION
+          )
           if race_btn:
             pyautogui.moveTo(race_btn, duration=0.2)
             pyautogui.click(race_btn)
@@ -178,7 +209,9 @@ def race_select(prioritize_g1 = False):
     return False
 
 def race_prep():
-  view_result_btn = pyautogui.locateCenterOnScreen("assets/buttons/view_results.png", confidence=0.8, minSearchTime=20)
+  view_result_btn = pyautogui.locateCenterOnScreen(
+    "assets/buttons/view_results.png", confidence=0.8, minSearchTime=20, region=GAME_REGION
+  )
   if view_result_btn:
     pyautogui.click(view_result_btn)
     time.sleep(0.5)
@@ -210,16 +243,16 @@ def career_lobby():
       continue
 
     # Check if current menu is in career lobby
-    tazuna_hint = pyautogui.locateCenterOnScreen("assets/ui/tazuna_hint.png", confidence=0.8, minSearchTime=0.2)
-
-    if tazuna_hint is None:
-      print("[INFO] Should be in career lobby.")
+    if not in_lobby_screen():
+      print("[INFO] Waiting for lobby screen.")
       continue
 
     time.sleep(0.5)
 
     # Check if there is debuff status
-    debuffed = pyautogui.locateOnScreen("assets/buttons/infirmary_btn2.png", confidence=0.9, minSearchTime=1)
+    debuffed = pyautogui.locateOnScreen(
+      "assets/buttons/infirmary_btn2.png", confidence=0.9, minSearchTime=1, region=GAME_REGION
+    )
     if debuffed:
       if is_infirmary_active((debuffed.left, debuffed.top, debuffed.width, debuffed.height)):
         pyautogui.click(debuffed)

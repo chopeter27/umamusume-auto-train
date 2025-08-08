@@ -56,7 +56,8 @@ You can edit your configuration in `config.json`
   "priority_stat": ["spd", "sta", "wit", "pwr", "guts"],
   "minimum_mood": "NORMAL",
   "maximum_failure": 10,
-  "prioritize_g1_race": false
+  "prioritize_g1_race": false,
+  "screen_region": [0, 0, 1920, 1080]
 }
 ```
 
@@ -81,6 +82,11 @@ Example: 10 means the bot will avoid training with more than 10% failure risk.
 
 If `true`, the bot will prioritize G1 races except during July and August (summer).
 Useful for fan farming.
+
+`screen_region` (array of four integers)
+
+Defines the area of the screen where Umamusume is running in the format `[left, top, width, height]`.
+Set this if you have multiple monitors so the bot only looks at the game window.
 
 Make sure the values match exactly as expected, typos might cause errors.
 
