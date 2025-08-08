@@ -1,15 +1,31 @@
 import cv2
+import json
 import numpy as np
 from PIL import ImageGrab, ImageStat
 
 from utils.screenshot import capture_region
 
+with open("config.json", "r", encoding="utf-8") as file:
+  config = json.load(file)
+
+SCREEN_REGION = config.get("screen_region", [0, 0, 1920, 1080])
+OFFSET_X, OFFSET_Y, WIDTH, HEIGHT = (
+  SCREEN_REGION[0], SCREEN_REGION[1], SCREEN_REGION[2], SCREEN_REGION[3]
+)
+
+
 def match_template(template_path, region=None, threshold=0.85):
   # Get screenshot
   if region:
-    screen = np.array(ImageGrab.grab(bbox=region))  # (left, top, right, bottom)
+    left = OFFSET_X + region[0]
+    top = OFFSET_Y + region[1]
+    right = left + region[2]
+    bottom = top + region[3]
+    screen = np.array(ImageGrab.grab(bbox=(left, top, right, bottom)))
   else:
-    screen = np.array(ImageGrab.grab())
+    screen = np.array(
+      ImageGrab.grab(bbox=(OFFSET_X, OFFSET_Y, OFFSET_X + WIDTH, OFFSET_Y + HEIGHT))
+    )
   screen = cv2.cvtColor(screen, cv2.COLOR_RGB2BGR)
 
   # Load template

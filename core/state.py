@@ -43,6 +43,12 @@ def check_support_card(threshold=0.8):
 
   return count_result
 
+# Check hint icon in each training
+def check_hint(threshold=0.8):
+  hint_icon = "assets/icons/hint_icon.png"
+  matches = match_template(hint_icon, SUPPORT_CARD_ICON_REGION, threshold)
+  return len(matches)
+
 # Get failure chance (idk how to get energy value)
 def check_failure():
   failure = enhanced_screenshot(FAILURE_REGION)

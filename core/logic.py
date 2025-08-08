@@ -1,6 +1,6 @@
 import json
 
-from core.state import check_current_year, stat_state
+from core.state import stat_state
 
 with open("config.json", "r", encoding="utf-8") as file:
   config = json.load(file)
@@ -91,6 +91,29 @@ def rainbow_training(results):
   print(f"\n[INFO] Rainbow training selected: {best_key.upper()} with {best_data['support'][best_key]} rainbow supports and {best_data['failure']}% fail chance")
   return best_key
 
+# Do hint training
+def hint_training(results):
+  hint_candidates = {
+    stat: data for stat, data in results.items()
+    if int(data["failure"]) <= MAX_FAILURE and data.get("hint", 0) > 0
+  }
+
+  if not hint_candidates:
+    print("\n[INFO] No hint training found under failure threshold.")
+    return None
+
+  best_hint = max(
+    hint_candidates.items(),
+    key=lambda x: (
+      x[1]["hint"],
+      -get_stat_priority(x[0])
+    )
+  )
+
+  best_key, best_data = best_hint
+  print(f"\n[INFO] Hint training selected: {best_key.upper()} with {best_data['hint']} hints and {best_data['failure']}% fail chance")
+  return best_key
+
 def filter_by_stat_caps(results, current_stats):
   return {
     stat: data for stat, data in results.items()
@@ -99,7 +122,6 @@ def filter_by_stat_caps(results, current_stats):
   
 # Decide training
 def do_something(results):
-  year = check_current_year()
   current_stats = stat_state()
   print(f"Current stats: {current_stats}")
 
@@ -109,11 +131,12 @@ def do_something(results):
     print("[INFO] All stats capped or no valid training.")
     return None
 
-  if "Junior Year" in year:
-    return most_support_card(filtered)
-  else:
-    result = rainbow_training(filtered)
-    if result is None:
-      print("[INFO] Falling back to most_support_card because rainbow not available.")
-      return most_support_card(filtered)
-  return result
+  result = hint_training(filtered)
+  if result:
+    return result
+
+  result = rainbow_training(filtered)
+  if result:
+    return result
+
+  return most_support_card(filtered)

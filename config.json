@@ -3,11 +3,12 @@
   "minimum_mood": "NORMAL",
   "maximum_failure": 10,
   "prioritize_g1_race": false,
+  "screen_region": [0, 0, 1920, 1080],
   "stat_caps": {
-  "spd": 1100,
-  "sta": 600,
-  "pwr": 600,
-  "guts": 600,
-  "wit": 1100
+    "spd": 1100,
+    "sta": 600,
+    "pwr": 600,
+    "guts": 600,
+    "wit": 1100
   }
 }
